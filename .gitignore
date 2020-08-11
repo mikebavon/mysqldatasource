@@ -1,0 +1,11 @@
+/target
+.settings
+.idea
+/bin/
+/src/main/main.iml
+/src/test/test.iml
+*.iml
+SchoolMgtSystem.iml
+.classpath
+.project
+*swp
