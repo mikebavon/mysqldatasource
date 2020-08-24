@@ -8,7 +8,8 @@ import java.util.List;
 public class HibernateSave {
 
     public static void main(String args []){
-        //insertWithSaveMethod();
+        //saveStudent();
+        listStudents();
         //insertWithPersistMethod();
         //insertWithSaveOrUpdateMethod();
         //updateWithUpdateMethod();
@@ -20,8 +21,36 @@ public class HibernateSave {
         System.out.println();
         retrieveUsingIdWithLoadMethod();*/
 
-        retrieveData();
+        //retrieveData();
     }
+
+    //1. methods for saving and updating...
+    public static void saveStudent(){
+        Session session = HibernateHelper.getSessionFactory().getCurrentSession();
+
+        Transaction tx = session.getTransaction();
+        tx.begin();
+
+        Student student = new Student();
+        student.setPerson(new Person());
+
+        student.getPerson().setName("Michelle");
+        student.getPerson().setGender(Gender.FEMALE);
+        student.getPerson().setIdNo("23232323yur");
+        student.getPerson().setMaritalStatus(MaritalStatus.COMPLICATED);
+        student.getPerson().setReligion(Religion.CHRISTIAN);
+
+        student.setContact(new Contact());
+        student.getContact().setEmail("michellegr.michelle@tracom.com");
+
+        student.setRegNo("PR/2020/001");
+        student.setNameOfChief("Sakawa");
+        student.setSecondarySkul("St Marys");
+        session.save(student);
+
+        tx.commit();
+    }
+
 
     //1. methods for saving and updating...
     public static void insertWithSaveMethod(){
@@ -33,6 +62,7 @@ public class HibernateSave {
         User user = new User();
         user.setName("Jane Doe");
         user.setEmail("jane.doe@nodomain.com");
+        user.setUserDetails("User is from tracom academy");
         int userId = (Integer) session.save(user);
 
         UserCredential credential = new UserCredential();
@@ -155,6 +185,16 @@ public class HibernateSave {
 
         for (User user : users){
             System.out.println(user.getId() + ". " + user.getName() + " emails is " + user.getEmail());
+        }
+    }
+
+    public static void listStudents(){
+        Session session = HibernateHelper.getSessionFactory().openSession();
+
+        List<Student> students = session.createQuery("FROM Student s").getResultList();
+
+        for (Student student : students){
+            System.out.println(student.getId() + ". " + student.getPerson().getName() + " emails is " + student.getContact().getEmail());
         }
     }
 

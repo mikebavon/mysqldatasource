@@ -35,6 +35,8 @@ public class HibernateHelper {
         configuration.addAnnotatedClass(TracomAcademy.class);
         configuration.addAnnotatedClass(User.class);
         configuration.addAnnotatedClass(UserCredential.class);
+        configuration.addAnnotatedClass(Lecturer.class);
+        configuration.addAnnotatedClass(Student.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties()).build();

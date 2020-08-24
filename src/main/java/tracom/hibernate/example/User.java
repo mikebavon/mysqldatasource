@@ -15,6 +15,9 @@ public class User {
     @Column
     private String email;
 
+    @Column(name = "user_details_2", columnDefinition = "longtext")
+    private String userDetails;
+
     public int getId() {
         return id;
     }
@@ -37,5 +40,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getUserDetails() {
+        return userDetails;
+    }
+
+    public void setUserDetails(String userDetails) {
+        this.userDetails = userDetails;
     }
 }
