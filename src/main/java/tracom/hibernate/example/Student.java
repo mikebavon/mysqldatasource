@@ -26,6 +26,9 @@ public class Student extends BaseEntity{
     @Column(name = "name_of_chief")
     private String nameOfChief;
 
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private School school;
+
     public Person getPerson() {
         return person;
     }
@@ -64,5 +67,13 @@ public class Student extends BaseEntity{
 
     public void setNameOfChief(String nameOfChief) {
         this.nameOfChief = nameOfChief;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setSchool(School school) {
+        this.school = school;
     }
 }

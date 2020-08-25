@@ -37,6 +37,7 @@ public class HibernateHelper {
         configuration.addAnnotatedClass(UserCredential.class);
         configuration.addAnnotatedClass(Lecturer.class);
         configuration.addAnnotatedClass(Student.class);
+        configuration.addAnnotatedClass(School.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties()).build();
