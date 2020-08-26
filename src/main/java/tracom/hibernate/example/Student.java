@@ -29,6 +29,9 @@ public class Student extends BaseEntity{
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private School school;
 
+    @OneToOne(mappedBy = "student")
+    private Registration registration;
+
     public Person getPerson() {
         return person;
     }
@@ -75,5 +78,13 @@ public class Student extends BaseEntity{
 
     public void setSchool(School school) {
         this.school = school;
+    }
+
+    public Registration getRegistration() {
+        return registration;
+    }
+
+    public void setRegistration(Registration registration) {
+        this.registration = registration;
     }
 }

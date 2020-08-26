@@ -8,7 +8,9 @@ import java.util.List;
 public class HibernateSave {
 
     public static void main(String args []){
-        deleteStudent();
+        //deleteStudent();
+        listStudentFromSchool();
+        //saveStudentUsingSchool();
         //saveStudent();
         //listStudents();
         //insertWithPersistMethod();
@@ -33,10 +35,10 @@ public class HibernateSave {
         tx.begin();
 
         School school = new School();
-        school.setId(3);
-        school.setName("Spring Valley Academy");
+        school.setId(4);
+        school.setName("MIT");
         school.setContact(new Contact());
-        school.getContact().setEmail("tracom.spring@tracom.com");
+        school.getContact().setEmail("tracom.mit@tracom.com");
 
         //int schoolId = (Integer) session.save(school);
 
@@ -46,19 +48,62 @@ public class HibernateSave {
         //student.setSchool(session.load(School.class, schoolId));
         student.setSchool(school);
 
-        student.getPerson().setName("Betty");
+        student.getPerson().setName("Anthony");
         student.getPerson().setGender(Gender.FEMALE);
-        student.getPerson().setIdNo("232332");
+        student.getPerson().setIdNo("232332232323");
         student.getPerson().setMaritalStatus(MaritalStatus.COMPLICATED);
         student.getPerson().setReligion(Religion.CHRISTIAN);
 
         student.setContact(new Contact());
-        student.getContact().setEmail("betty@tracom.com");
+        student.getContact().setEmail("antony@tracom.com");
 
-        student.setRegNo("PR/2020/788");
-        student.setNameOfChief("Maina");
-        student.setSecondarySkul("Loreto");
+        student.setRegNo("PR/2020/78845");
+        student.setNameOfChief("Kiarie");
+        student.setSecondarySkul("Tumaini Industry Secondary School");
         session.save(student);
+
+        tx.commit();
+    }
+
+    //1. methods for saving and updating...
+    public static void saveStudentUsingSchool(){
+        Session session = HibernateHelper.getSessionFactory().getCurrentSession();
+
+        Transaction tx = session.getTransaction();
+        tx.begin();
+
+        School school = new School();
+        school.setName("HAVARD - Rwanda");
+        school.setContact(new Contact());
+        school.getContact().setEmail("harvard.rw@tracom.com");
+
+        //int schoolId = (Integer) session.save(school);
+
+        for (int idx = 0; idx<1000; idx++) {
+            Student student = new Student();
+            student.setPerson(new Person());
+
+            //student.setSchool(session.load(School.class, schoolId));
+            student.setSchool(school);
+
+            student.getPerson().setName("Alexd" + idx);
+            student.getPerson().setGender(Gender.FEMALE);
+            student.getPerson().setIdNo("232332232323dd" + idx);
+            student.getPerson().setMaritalStatus(MaritalStatus.COMPLICATED);
+            student.getPerson().setReligion(Religion.CHRISTIAN);
+
+            student.setContact(new Contact());
+            student.getContact().setEmail("alexd@tracom.com" + idx);
+
+            student.setRegNo("PR/2020/78845d" + idx);
+            student.setNameOfChief("Kiaried" + idx);
+            student.setSecondarySkul("Tumainid Industry Secondary School" + idx);
+
+            //******
+            school.addStudent(student);
+        }
+
+        session.save(school);
 
         tx.commit();
     }
@@ -235,6 +280,27 @@ public class HibernateSave {
             System.out.println();
             System.out.println();
             System.out.println();
+        }
+    }
+
+    public static void listStudentFromSchool(){
+        Session session = HibernateHelper.getSessionFactory().openSession();
+
+        List<School> schools = session.createQuery("FROM School s").getResultList();
+
+        for (School school : schools){
+            System.out.println(school.getName().toUpperCase());
+            System.out.println("Students are as follows:");
+
+            for(Student student : school.getStudents())
+                System.out.println(student.getId() + ". " + student.getPerson().getName() + " emails is " + student.getContact().getEmail());
+
+
+            System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            System.out.println();
+            System.out.println();
+            System.out.println();
+
         }
     }
 
