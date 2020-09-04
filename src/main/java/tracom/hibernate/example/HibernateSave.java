@@ -1,5 +1,6 @@
 package tracom.hibernate.example;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -9,10 +10,10 @@ public class HibernateSave {
 
     public static void main(String args []){
         //deleteStudent();
-        listStudentFromSchool();
+        //listStudentFromSchool();
         //saveStudentUsingSchool();
         //saveStudent();
-        //listStudents();
+        listStudents();
         //insertWithPersistMethod();
         //insertWithSaveOrUpdateMethod();
         //updateWithUpdateMethod();
@@ -258,26 +259,78 @@ public class HibernateSave {
         }
     }
 
+    @SuppressWarnings({"unchecked"})
     public static void listStudents(){
         Session session = HibernateHelper.getSessionFactory().openSession();
 
-        List<Student> students = session.createQuery("FROM Student s").getResultList();
+        for (int page = 1; page<10; page++) {
 
-        for (Student student : students){
+            System.out.println("Page No. " + page);
+            List<Student> students = session.createQuery("FROM Student s where s.id>:minId")
+                    .setParameter("minId", 800)
+                    .setFirstResult(page * 5 - 5)
+                    .setMaxResults(5)
+                    .getResultList();
 
-            System.out.println(student.getId() + ". " + student.getPerson().getName() + " emails is " + student.getContact().getEmail());
+            for (Student student : students) {
 
-            System.out.println("The school of the student will be loaded later on use");
+                System.out.println(student.getId() + ". " + student.getPerson().getName() + " emails is " + student.getContact().getEmail());
+
+                //if (student.getSchool() != null)
+                //System.out.println("School: " + student.getSchool().getName());
+
+  /*          System.out.println("The school of the student will be loaded later on use");
             System.out.println("This students are fantastic");
-            System.out.println("They hot dog for breakfast");
+            System.out.println("They hot dog for breakfast");*/
 
-            if(student.getSchool() != null)
+/*            if(student.getSchool() != null)
                 System.out.println(student.getSchool());
 
             System.out.println();
             System.out.println();
             System.out.println();
+            System.out.println();*/
+            }
+
+
             System.out.println();
+            System.out.println();
+        }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public static void listByCriteriaStudents(){
+        Session session = HibernateHelper.getSessionFactory().openSession();
+
+        for (int page = 1; page<10; page++) {
+            System.out.println("Page No. " + page);
+            List<Student> students = session.createQuery("FROM Student s where s.id>:minId")
+                    .setParameter("minId", 800)
+                    .setFirstResult(page * 5 - 5)
+                    .setMaxResults(5)
+                    .getResultList();
+
+            for (Student student : students) {
+
+                System.out.println(student.getId() + ". " + student.getPerson().getName() + " emails is " + student.getContact().getEmail());
+
+                //if (student.getSchool() != null)
+                //System.out.println("School: " + student.getSchool().getName());
+
+  /*          System.out.println("The school of the student will be loaded later on use");
+            System.out.println("This students are fantastic");
+            System.out.println("They hot dog for breakfast");*/
+
+/*            if(student.getSchool() != null)
+                System.out.println(student.getSchool());
+
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println();*/
+            }
+
+
             System.out.println();
             System.out.println();
         }
@@ -287,6 +340,7 @@ public class HibernateSave {
         Session session = HibernateHelper.getSessionFactory().openSession();
 
         List<School> schools = session.createQuery("FROM School s").getResultList();
+
 
         for (School school : schools){
             System.out.println(school.getName().toUpperCase());
@@ -300,7 +354,6 @@ public class HibernateSave {
             System.out.println();
             System.out.println();
             System.out.println();
-
         }
     }
 

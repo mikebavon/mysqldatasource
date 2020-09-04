@@ -2,6 +2,7 @@ package tracom.hibernate.example;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 
@@ -28,6 +29,9 @@ public class Student extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private School school;
+
+    @Formula("(select s.name from schools s where s.id=school_id)")
+    private String schoolName;
 
     @OneToOne(mappedBy = "student")
     private Registration registration;
@@ -78,6 +82,14 @@ public class Student extends BaseEntity{
 
     public void setSchool(School school) {
         this.school = school;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
     }
 
     public Registration getRegistration() {
