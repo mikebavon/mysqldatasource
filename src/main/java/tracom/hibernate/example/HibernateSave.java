@@ -1,19 +1,39 @@
 package tracom.hibernate.example;
 
 import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.transform.Transformers;
+import org.hibernate.type.IntegerType;
+import org.hibernate.type.StringType;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class HibernateSave {
 
     public static void main(String args []){
+
+/*        Scanner input = new Scanner(System.in);
+        System.out.println("Enter start id:");
+        int min = input.nextInt();
+        System.out.println("Enter max id:");
+        int max = input.nextInt();
+        System.out.println("Enter  page size: ");
+        int pageSize = input.nextInt();
+        System.out.println("Enter search key");
+        String searchBy = input.next();*/
+
+        //listByNameQueryStudents(min, max, pageSize, searchBy) ;
+        listByNameQuerySql() ;
+        //listStudents(min, max, pageSize, searchBy) ;
         //deleteStudent();
         //listStudentFromSchool();
         //saveStudentUsingSchool();
         //saveStudent();
-        listStudents();
+
         //insertWithPersistMethod();
         //insertWithSaveOrUpdateMethod();
         //updateWithUpdateMethod();
@@ -260,21 +280,25 @@ public class HibernateSave {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static void listStudents(){
+    public static void listStudents(int min, int max, int pageSize, String searchBy){
         Session session = HibernateHelper.getSessionFactory().openSession();
 
         for (int page = 1; page<10; page++) {
 
             System.out.println("Page No. " + page);
-            List<Student> students = session.createQuery("FROM Student s where s.id>:minId")
-                    .setParameter("minId", 800)
-                    .setFirstResult(page * 5 - 5)
-                    .setMaxResults(5)
+            List<Student> students = session.createQuery("SELECT new Student(s.person,s.contact) FROM Student s where s.id between :minId and "
+                    + ":maxId and (s.person.name like :searchKey or s.contact.email like :searchKey or s.person.idNo like :searchKey)")
+                    .setParameter("minId", min)
+                    .setParameter("maxId", max)
+                    .setParameter("searchKey", searchBy + "%")
+                    .setFirstResult(page * pageSize - pageSize)
+                    .setMaxResults(pageSize)
                     .getResultList();
 
             for (Student student : students) {
 
                 System.out.println(student.getId() + ". " + student.getPerson().getName() + " emails is " + student.getContact().getEmail());
+                //System.out.println(student.getRegNo() + ". " + student.getSecondarySkul());
 
                 //if (student.getSchool() != null)
                 //System.out.println("School: " + student.getSchool().getName());
@@ -299,41 +323,63 @@ public class HibernateSave {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static void listByCriteriaStudents(){
+    public static void listByNameQueryStudents(int min, int max, int pageSize, String searchBy){
         Session session = HibernateHelper.getSessionFactory().openSession();
 
         for (int page = 1; page<10; page++) {
+
             System.out.println("Page No. " + page);
-            List<Student> students = session.createQuery("FROM Student s where s.id>:minId")
-                    .setParameter("minId", 800)
-                    .setFirstResult(page * 5 - 5)
-                    .setMaxResults(5)
+            List<Student> students = session.createNamedQuery(Student.NQ_LIST_STUDENTS_PERSON_CONTACT_ONLY)
+                    .setParameter("minId", min)
+                    .setParameter("maxId", max)
+                    .setParameter("searchKey", searchBy + "%")
+                    .setFirstResult(page * pageSize - pageSize)
+                    .setMaxResults(pageSize)
                     .getResultList();
 
             for (Student student : students) {
 
                 System.out.println(student.getId() + ". " + student.getPerson().getName() + " emails is " + student.getContact().getEmail());
 
-                //if (student.getSchool() != null)
-                //System.out.println("School: " + student.getSchool().getName());
-
-  /*          System.out.println("The school of the student will be loaded later on use");
-            System.out.println("This students are fantastic");
-            System.out.println("They hot dog for breakfast");*/
-
-/*            if(student.getSchool() != null)
-                System.out.println(student.getSchool());
-
-            System.out.println();
-            System.out.println();
-            System.out.println();
-            System.out.println();*/
             }
-
 
             System.out.println();
             System.out.println();
         }
+    }
+
+    @SuppressWarnings({"unchecked","rawtypes"})
+    public static void listByNameQuerySql(){
+        Session session = HibernateHelper.getSessionFactory().openSession();
+
+            List<Object[]> students = session.createSQLQuery("select s.id,s.name,s.email from students s")
+                    .setFirstResult(100)
+                    .setMaxResults(20)
+                    .list();
+
+            for (Object[] obj : students){
+                System.out.println(obj[0] + ". " + obj[1] + " email is " + obj[2]);
+            }
+    }
+
+    @SuppressWarnings({"unchecked","rawtypes"})
+    public static void listByNameQuerySqlTransform(){
+        Session session = HibernateHelper.getSessionFactory().openSession();
+
+        NativeQuery sqlQuery = session.createNativeQuery("select s.id as recorId,s.name as primaryName,s.email as primaryEmail from students s")
+                .setFirstResult(100)
+                .setMaxResults(20);
+
+        List<PrimaryStudent> primaryStudents = sqlQuery
+            .addScalar("recorId", IntegerType.INSTANCE)
+            .addScalar("primaryName", StringType.INSTANCE)
+            .addScalar("primaryEmail", StringType.INSTANCE)
+            .setResultSetMapping(String.valueOf(Transformers.aliasToBean(PrimaryStudent.class)))
+            .list();
+
+            for (PrimaryStudent primaryStudent : primaryStudents){
+                System.out.println(primaryStudent.getRecorId() + ". " + primaryStudent.getPrimaryName() + " email is " + primaryStudent.getPrimaryEmail());
+            }
     }
 
     public static void listStudentFromSchool(){
@@ -356,7 +402,4 @@ public class HibernateSave {
             System.out.println();
         }
     }
-
-
-
 }

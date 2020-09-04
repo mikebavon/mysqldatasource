@@ -6,11 +6,26 @@ import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 
+
+
+@NamedQueries({
+    @NamedQuery(name = Student.NQ_LIST_STUDENTS_PERSON_CONTACT_ONLY, query = "SELECT new Student(s.person,s.contact) FROM Student s where s.id between :minId"
+            + " and :maxId and (s.person.name like :searchKey or s.contact.email like :searchKey or s.person.idNo like :searchKey)"),
+
+    @NamedQuery(name = Student.NQ_LIST_STUDENTS, query = "SELECT s FROM Student s where s.id between :minId and "
+            + ":maxId and (s.person.name like :searchKey or s.contact.email like :searchKey or s.person.idNo like :searchKey)")
+})
 @Entity
 @Table(name = "students")
 @DynamicInsert
 @DynamicUpdate
 public class Student extends BaseEntity{
+
+    @Transient
+    public static final String NQ_LIST_STUDENTS_PERSON_CONTACT_ONLY = "Student.listStudentsPersonContactOnly";
+
+    @Transient
+    public static final String NQ_LIST_STUDENTS = "Student.listStudentS";
 
     @Embedded
     private Person person;
@@ -35,6 +50,18 @@ public class Student extends BaseEntity{
 
     @OneToOne(mappedBy = "student")
     private Registration registration;
+
+    public Student(){}
+
+    public Student(String regNo, String secondarySkul){
+        this.regNo = regNo;
+        this.secondarySkul = secondarySkul;
+    }
+
+    public Student(Person person, Contact contact){
+        this.contact = contact;
+        this.person = person;
+    }
 
     public Person getPerson() {
         return person;
